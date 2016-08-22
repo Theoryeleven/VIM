@@ -6,7 +6,7 @@
 #include "VIMBasicAIController.generated.h"
 
 /**
-*
+* Basic AI functionality 
 */
 
 UCLASS()

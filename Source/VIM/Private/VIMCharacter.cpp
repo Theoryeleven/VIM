@@ -65,3 +65,8 @@ void AVIMCharacter::Tick(float DeltaSeconds)
 		}
 	}
 }
+void AVIMCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+}

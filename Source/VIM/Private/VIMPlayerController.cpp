@@ -13,7 +13,6 @@ AVIMPlayerController::AVIMPlayerController()
 void AVIMPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
-
 	// keep updating the destination every tick while desired
 	if (bMoveToMouseCursor)
 	{
@@ -42,6 +41,7 @@ void AVIMPlayerController::MoveToMouseCursor()
 
 	if (Hit.bBlockingHit)
 	{
+	
 		// We hit something, move there
 		SetNewMoveDestination(Hit.ImpactPoint);
 	}
@@ -73,12 +73,14 @@ void AVIMPlayerController::SetNewMoveDestination(const FVector DestLocation)
 		if (NavSys && (Distance > 120.0f))
 		{
 			NavSys->SimpleMoveToLocation(this, DestLocation);
+		
 		}
 	}
 }
 
 void AVIMPlayerController::OnSetDestinationPressed()
 {
+	UE_LOG(LogTemp, Warning, TEXT("4"))
 	// set flag to keep updating destination until released
 	bMoveToMouseCursor = true;
 }

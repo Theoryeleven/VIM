@@ -2,6 +2,7 @@
 
 #include "VIM.h"
 #include "VIMCharacter.h"
+#include "VIMPlayerController.h"
 #include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
 #include "Runtime/Engine/Classes/Components/DecalComponent.h"
 
@@ -29,12 +30,12 @@ AVIMCharacter::AVIMCharacter()
 	CameraBoom->RelativeRotation = FRotator(-60.f, 0.f, 0.f);
 	CameraBoom->bDoCollisionTest = false; // Don't want to pull camera in when it collides with level
 
-	// Create a camera...
+										  // Create a camera...
 	TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
 	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	// Create a decal in the world to show the cursor's location
+															 // Create a decal in the world to show the cursor's location
 	CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
 	CursorToWorld->SetupAttachment(RootComponent);
 	static ConstructorHelpers::FObjectFinder<UMaterial> DecalMaterialAsset(TEXT("Material'/Game/TopDownCPP/Blueprints/M_Cursor_Decal.M_Cursor_Decal'"));
@@ -54,7 +55,7 @@ void AVIMCharacter::Tick(float DeltaSeconds)
 {
 	if (CursorToWorld != nullptr)
 	{
-		if (APlayerController* PC = Cast<APlayerController>(GetController()))
+		if (AVIMPlayerController* PC = Cast<AVIMPlayerController>(GetController()))
 		{
 			FHitResult TraceHitResult;
 			PC->GetHitResultUnderCursor(ECC_Visibility, true, TraceHitResult);
@@ -64,9 +65,4 @@ void AVIMCharacter::Tick(float DeltaSeconds)
 			CursorToWorld->SetWorldRotation(CursorR);
 		}
 	}
-}
-void AVIMCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-
 }

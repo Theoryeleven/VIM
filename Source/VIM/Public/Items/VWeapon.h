@@ -142,27 +142,6 @@ private:
 
 	virtual void HandleFiring();
 
-	UFUNCTION(Reliable, Server, WithValidation)
-	void ServerStartFire();
-
-	void ServerStartFire_Implementation();
-
-	bool ServerStartFire_Validate();
-
-	UFUNCTION(Reliable, Server, WithValidation)
-	void ServerStopFire();
-
-	void ServerStopFire_Implementation();
-
-	bool ServerStopFire_Validate();
-
-	UFUNCTION(Reliable, Server, WithValidation)
-	void ServerHandleFiring();
-
-	void ServerHandleFiring_Implementation();
-
-	bool ServerHandleFiring_Validate();
-
 	void OnBurstStarted();
 
 	void OnBurstFinished();
@@ -281,31 +260,11 @@ protected:
 
 	virtual void ReloadWeapon();
 
-	/* Trigger reload from server */
-	UFUNCTION(Reliable, Client)
-	void ClientStartReload();
-
-	void ClientStartReload_Implementation();
-
 	/* Is weapon and character currently capable of starting a reload */
 	bool CanReload();
 
 	UFUNCTION()
 	void OnRep_Reload();
-
-	UFUNCTION(reliable, server, WithValidation)
-	void ServerStartReload();
-
-	void ServerStartReload_Implementation();
-
-	bool ServerStartReload_Validate();
-
-	UFUNCTION(reliable, server, WithValidation)
-	void ServerStopReload();
-
-	void ServerStopReload_Implementation();
-
-	bool ServerStopReload_Validate();
 
 public:
 

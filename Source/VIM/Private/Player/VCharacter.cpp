@@ -50,7 +50,7 @@ AVCharacter::AVCharacter(const class FObjectInitializer& ObjectInitializer)
 	CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
 	CursorToWorld->SetupAttachment(RootComponent);
 
-	static ConstructorHelpers::FObjectFinder<UMaterial> DecalMaterialAsset(TEXT("Material'/Game/TopDownCPP/Blueprints/M_Cursor_Decal.M_Cursor_Decal'"));
+	static ConstructorHelpers::FObjectFinder<UMaterial> DecalMaterialAsset(TEXT("Material'/Game/VIM/Blueprints/M_Cursor_Decal.M_Cursor_Decal'"));
 	if (DecalMaterialAsset.Succeeded())
 	{
 		CursorToWorld->SetDecalMaterial(DecalMaterialAsset.Object);

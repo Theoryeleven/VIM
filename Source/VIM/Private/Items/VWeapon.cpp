@@ -109,7 +109,6 @@ void AVWeapon::AttachMeshToPawn(EInventorySlot Slot)
 	{
 		// Remove and hide
 		DetachMeshFromPawn();
-
 		USkeletalMeshComponent* PawnMesh = MyPawn->GetMesh();
 		FName AttachPoint = MyPawn->GetInventoryAttachPoint(Slot);
 		Mesh->SetHiddenInGame(false);
@@ -189,16 +188,11 @@ void AVWeapon::OnEnterInventory(AVCharacter* NewOwner)
 
 void AVWeapon::OnLeaveInventory()
 {
-	if (Role == ROLE_Authority)
-	{
-		SetOwningPawn(nullptr);
-	}
-
+	SetOwningPawn(nullptr);
 	if (IsAttachedToPawn())
 	{
 		OnUnEquip();
 	}
-
 	DetachMeshFromPawn();
 }
 
@@ -217,11 +211,6 @@ bool AVWeapon::IsAttachedToPawn() const // TODO: Review name to more accurately 
 
 void AVWeapon::StartFire()
 {
-	if (Role < ROLE_Authority)
-	{
-		ServerStartFire();
-	}
-
 	if (!bWantsToFire)
 	{
 		bWantsToFire = true;
@@ -232,42 +221,12 @@ void AVWeapon::StartFire()
 
 void AVWeapon::StopFire()
 {
-	if (Role < ROLE_Authority)
-	{
-		ServerStopFire();
-	}
-
 	if (bWantsToFire)
 	{
 		bWantsToFire = false;
 		DetermineWeaponState();
 	}
 }
-
-
-bool AVWeapon::ServerStartFire_Validate()
-{
-	return true;
-}
-
-
-void AVWeapon::ServerStartFire_Implementation()
-{
-	StartFire();
-}
-
-
-bool AVWeapon::ServerStopFire_Validate()
-{
-	return true;
-}
-
-
-void AVWeapon::ServerStopFire_Implementation()
-{
-	StopFire();
-}
-
 
 bool AVWeapon::CanFire() const
 {
@@ -335,18 +294,13 @@ void AVWeapon::HandleFiring()
 {
 	if (CurrentAmmoInClip > 0 && CanFire())
 	{
-		if (GetNetMode() != NM_DedicatedServer)
-		{
-			SimulateWeaponFire();
-		}
-
-		if (MyPawn && MyPawn->IsLocallyControlled())
+		if (MyPawn)
 		{
 			FireWeapon();
 
 			UseAmmo();
 
-			// Update firing FX on remote clients if this is called on server
+			
 			BurstCounter++;
 		}
 	}
@@ -354,7 +308,7 @@ void AVWeapon::HandleFiring()
 	{
 		StartReload();
 	}
-	else if (MyPawn && MyPawn->IsLocallyControlled())
+	else if (MyPawn)
 	{
 		if (GetCurrentAmmo() == 0 && !bRefiring)
 		{
@@ -374,20 +328,15 @@ void AVWeapon::HandleFiring()
 		}
 	}
 
-	if (MyPawn && MyPawn->IsLocallyControlled())
-	{
-		if (Role < ROLE_Authority)
-		{
-			ServerHandleFiring();
-		}
 
-		/* Retrigger HandleFiring on a delay for automatic weapons */
+
+		/* Re trigger HandleFiring on a delay for automatic weapons */
 		bRefiring = (CurrentState == EWeaponState::Firing && TimeBetweenShots > 0.0f);
 		if (bRefiring)
 		{
 			GetWorldTimerManager().SetTimer(TimerHandle_HandleFiring, this, &AVWeapon::HandleFiring, TimeBetweenShots, false);
 		}
-	}
+	
 
 	/* Make Noise on every shot. The data is managed by the PawnNoiseEmitterComponent created in SBaseCharacter and used by PawnSensingComponent in SZombieCharacter */
 	if (MyPawn)
@@ -441,26 +390,7 @@ void AVWeapon::OnRep_BurstCounter()
 
 
 
-bool AVWeapon::ServerHandleFiring_Validate()
-{
-	return true;
-}
 
-
-void AVWeapon::ServerHandleFiring_Implementation()
-{
-	const bool bShouldUpdateAmmo = (CurrentAmmoInClip > 0 && CanFire());
-
-	HandleFiring();
-
-	if (bShouldUpdateAmmo)
-	{
-		UseAmmo();
-
-		// Update firing FX on remote clients
-		BurstCounter++;
-	}
-}
 
 
 void AVWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -539,10 +469,10 @@ void AVWeapon::OnBurstFinished()
 {
 	BurstCounter = 0;
 
-	if (GetNetMode() != NM_DedicatedServer)
-	{
+	
+	
 		StopSimulatingWeaponFire();
-	}
+	
 
 	GetWorldTimerManager().ClearTimer(TimerHandle_HandleFiring);
 	bRefiring = false;
@@ -631,9 +561,7 @@ void AVWeapon::OnEquipFinished()
 	if (MyPawn)
 	{
 		// Try to reload empty clip
-		if (MyPawn->IsLocallyControlled() &&
-			CurrentAmmoInClip <= 0 &&
-			CanReload())
+		if (MyPawn->CanReload())
 		{
 			StartReload();
 		}
@@ -659,7 +587,7 @@ int32 AVWeapon::GiveAmmo(int32 AddAmount)
 	if (GetCurrentAmmoInClip() <= 0 && CanReload() &&
 		MyPawn->GetCurrentWeapon() == this)
 	{
-		ClientStartReload();
+		StartReload();
 	}
 
 	/* Return the unused ammo when weapon is filled up */
@@ -700,12 +628,6 @@ int32 AVWeapon::GetMaxAmmo() const
 
 void AVWeapon::StartReload(bool bFromReplication)
 {
-	/* Push the request to server */
-	if (!bFromReplication && Role < ROLE_Authority)
-	{
-		ServerStartReload();
-	}
-
 	/* If local execute requested or we are running on the server */
 	if (bFromReplication || CanReload())
 	{
@@ -719,11 +641,6 @@ void AVWeapon::StartReload(bool bFromReplication)
 		}
 
 		GetWorldTimerManager().SetTimer(TimerHandle_StopReload, this, &AVWeapon::StopSimulateReload, AnimDuration, false);
-		if (Role == ROLE_Authority)
-		{
-			GetWorldTimerManager().SetTimer(TimerHandle_ReloadWeapon, this, &AVWeapon::ReloadWeapon, FMath::Max(0.1f, AnimDuration - 0.1f), false);
-		}
-
 		if (MyPawn && MyPawn->IsLocallyControlled())
 		{
 			PlayWeaponSound(ReloadSound);
@@ -752,8 +669,6 @@ void AVWeapon::ReloadWeapon()
 		CurrentAmmoInClip += ClipDelta;
 	}
 }
-
-
 bool AVWeapon::CanReload()
 {
 	bool bCanReload = (!MyPawn || MyPawn->CanReload());
@@ -761,8 +676,6 @@ bool AVWeapon::CanReload()
 	bool bStateOKToReload = ((CurrentState == EWeaponState::Idle) || (CurrentState == EWeaponState::Firing));
 	return (bCanReload && bGotAmmo && bStateOKToReload);
 }
-
-
 void AVWeapon::OnRep_Reload()
 {
 	if (bPendingReload)
@@ -777,31 +690,6 @@ void AVWeapon::OnRep_Reload()
 }
 
 
-void AVWeapon::ServerStartReload_Implementation()
-{
-	StartReload();
-}
 
 
-bool AVWeapon::ServerStartReload_Validate()
-{
-	return true;
-}
 
-
-void AVWeapon::ServerStopReload_Implementation()
-{
-	StopSimulateReload();
-}
-
-
-bool AVWeapon::ServerStopReload_Validate()
-{
-	return true;
-}
-
-
-void AVWeapon::ClientStartReload_Implementation()
-{
-	StartReload();
-}

@@ -3,7 +3,7 @@
 #ifndef __VIM_H__
 #define __VIM_H__
 
-#include "EngineMinimal.h"
+#include "Engine.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogVIM, Log, All);
 

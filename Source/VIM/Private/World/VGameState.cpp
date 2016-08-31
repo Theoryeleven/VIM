@@ -107,7 +107,9 @@ void AVGameState::AddScore(int32 Score)
 
 void AVGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-
+	DOREPLIFETIME(AVGameState, ElapsedGameMinutes);
+	DOREPLIFETIME(AVGameState, bIsNight);
+	DOREPLIFETIME(AVGameState, TotalScore);
 }
 
 

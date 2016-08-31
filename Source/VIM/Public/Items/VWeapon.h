@@ -132,7 +132,7 @@ protected:
 	FHitResult WeaponTrace(const FVector& TraceFrom, const FVector& TraceTo) const;
 
 	/* With PURE_VIRTUAL we skip implementing the function in SWeapon.cpp and can do this in SWeaponInstant.cpp / SFlashlight.cpp instead */
-	virtual void FireWeapon() PURE_VIRTUAL(AVWeapon::FireWeapon, );
+	virtual void FireWeapon() PURE_VIRTUAL(AVWeapon::FireWeapon(),);
 
 private:
 

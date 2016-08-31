@@ -11,7 +11,7 @@ class VIM_API AVCharacter : public AVBaseCharacter
 	GENERATED_BODY()
 
 	AVCharacter(const FObjectInitializer& ObjectInitializer);
-
+	
 	/** Returns TopDownCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetTopDownCameraComponent() const { return TopDownCameraComponent; }
 	/** Returns CameraBoom subobject **/
@@ -141,9 +141,15 @@ public:
 	float GetMinEnergy() const;
 
 	UFUNCTION(BlueprintCallable, Category = "PlayerCondition")
-	void RestoreCondition(float HealthRestored, float HungerRestored);
+	float GetMaxEnergy() const;
 
-	/* Increments hunger, used by timer. */
+	UFUNCTION(BlueprintPure, Category = "PlayerCondition")
+	float GetEnergyPercentage() const;
+
+	UFUNCTION(BlueprintCallable, Category = "PlayerCondition")
+	void RestoreCondition(float HealthRestored, float EnergyRestored);
+
+	/* Decrements Energy, used by timer. */
 	void DecrimentEnergy();
 
 	UPROPERTY(EditDefaultsOnly, Category = "PlayerCondition")
@@ -152,7 +158,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "PlayerCondition")
 	float DecrimentEnergyAmount;
 
-	/* Limit when player suffers Hitpoints from extreme hunger */
+	/* Limit when player suffers Hit points from extreme hunger */
 	UPROPERTY(BlueprintReadOnly, Category = "PlayerCondition")
 	float CriticalEnergyThreshold;
 
@@ -162,13 +168,18 @@ public:
 	// Documentation Note: MaxHunger does not need to be replicated, only values that change and are displayed or used by clients should ever be replicated.
 	UPROPERTY(EditDefaultsOnly, Category = "PlayerCondition")
 	float MinEnergy;
+
+	UPROPERTY(EditDefaultsOnly, Category = "PlayerCondition")
+	float MaxEnergy;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "PlayerCondition")
 	float EnergyDamagePerInterval;
 
-	/* Damage type applied when player suffers critical hunger */
+	/* Damage type applied when player suffers critical Energy shortage */
 	UPROPERTY(EditDefaultsOnly, Category = "PlayerCondition")
 	TSubclassOf<UDamageType> EnergyDamageType;
+
+	
 
 	/************************************************************************/
 	/* Damage & Death                                                       */

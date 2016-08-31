@@ -126,4 +126,6 @@ void AVFlashlight::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(AVFlashlight, bIsActive);
+
 }

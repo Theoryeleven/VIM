@@ -397,7 +397,12 @@ void AVWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetime
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	
+	DOREPLIFETIME(AVWeapon, MyPawn);
+
+	DOREPLIFETIME_CONDITION(AVWeapon, CurrentAmmo, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(AVWeapon, CurrentAmmoInClip, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(AVWeapon, BurstCounter, COND_SkipOwner);
+	DOREPLIFETIME_CONDITION(AVWeapon, bPendingReload, COND_SkipOwner);
 }
 
 

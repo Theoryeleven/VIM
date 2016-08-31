@@ -75,5 +75,8 @@ float AVPlayerState::GetScore() const
 void AVPlayerState::GetLifetimeReplicatedProps(TArray< class FLifetimeProperty > & OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
+	DOREPLIFETIME(AVPlayerState, NumKills);
+	DOREPLIFETIME(AVPlayerState, NumDeaths);
+	DOREPLIFETIME(AVPlayerState, TeamNumber);
+	
 }

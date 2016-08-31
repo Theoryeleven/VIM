@@ -21,20 +21,38 @@ class VIM_API UVDamageType : public UDamageType
 		UPROPERTY(EditDefaultsOnly)
 			bool bCanDieFrom;
 
-		/* Damage modifier for head shot damage */
+		/* Damage modifier*/
 		UPROPERTY(EditDefaultsOnly)
-			float HeadDmgModifier;
+			float DefaultDmgModifier;
 
 		UPROPERTY(EditDefaultsOnly)
-			float LimbDmgModifier;
+			float BodyDmgModifier;
+
+		UPROPERTY(EditDefaultsOnly)
+			float ArmourDmgModifier;
+
+		UPROPERTY(EditDefaultsOnly)
+			float ShieldDmgModifier;
+
+		UPROPERTY(EditDefaultsOnly)
+			float InanimateDmgModifier;
+
+	
+
 
 	public:
 
 		bool GetCanDieFrom();
 
-		float GetHeadDamageModifier();
+		float GetDefaultDamageModifier();
 
-		float GetLimbDamageModifier();
+		float GetBodyDamageModifier();
+
+		float GetArmourDamageModifier();
+
+		float GetShieldDamageModifier();
+
+		float GetInanimateDamageModifier();
 };
 
 	

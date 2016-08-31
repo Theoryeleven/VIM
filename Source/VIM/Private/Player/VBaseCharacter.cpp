@@ -3,6 +3,7 @@
 #include "VIM.h"
 #include "VDamageType.h"
 #include "VBaseCharacter.h"
+#include "VGameMode.h"
 
 
 // Sets default values
@@ -10,6 +11,7 @@ AVBaseCharacter::AVBaseCharacter(const class FObjectInitializer& ObjectInitializ
 /* Override the movement class from the base class to our own to support multiple speeds (sprinting) */
 	//: Super(ObjectInitializer.SetDefaultSubobjectClass<UCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
+	
 	Health = 100;
 
 	TargetingSpeedModifier = 0.5f;
@@ -27,10 +29,29 @@ float AVBaseCharacter::GetHealth() const
 {
 	return Health;
 }
+float AVBaseCharacter::GetHealthPercentage() const
+{
+	
+	return (Health / GetMaxHealth());
+}
 float AVBaseCharacter::GetMaxHealth() const
 {
 	// Retrieve the default value of the health property that is assigned on instantiation.
 	return GetClass()->GetDefaultObject<AVBaseCharacter>()->Health;
+}
+
+float AVBaseCharacter::GetShields() const
+{
+	return Shields;
+}
+float AVBaseCharacter::GetMaxShields() const
+{
+	return GetClass()->GetDefaultObject<AVBaseCharacter>()->Shields;
+}
+
+float AVBaseCharacter::GetShieldPercentage() const
+{
+	return (Shields / MaxShields);
 }
 
 bool AVBaseCharacter::IsAlive() const
@@ -44,34 +65,40 @@ float AVBaseCharacter::TakeDamage(float Damage, struct FDamageEvent const& Damag
 		return 0.f;
 	}
 	/* Modify based based on game type rules */
-	//AVGameMode* MyGameMode = Cast<AVGameMode>(GetWorld()->GetAuthGameMode());
-	//Damage = MyGameMode ? MyGameMode->ModifyDamage(Damage, this, DamageEvent, EventInstigator, DamageCauser) : Damage;
+	AVGameMode* MyGameMode = Cast<AVGameMode>(GetWorld()->GetAuthGameMode());
+	Damage = MyGameMode ? MyGameMode->ModifyDamage(Damage, this, DamageEvent, EventInstigator, DamageCauser) : Damage;
 	const float ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 	if (ActualDamage > 0.f)
 	{
-		Health -= ActualDamage;
-		if (Health <= 0)
+		if (Shields > 0)
 		{
-			bool bCanDie = true;
+			Shields -= ActualDamage;
+		}
+		else
+		{
+			Health -= ActualDamage;
+			if (Health <= 0)
+			{
+				bool bCanDie = true;
 
-			/* Check the damage type, always allow dying if the cast fails, otherwise check the property if player can die from damage type */
-			if (DamageEvent.DamageTypeClass)
-			{
-				UVDamageType* DmgType = Cast<UVDamageType>(DamageEvent.DamageTypeClass->GetDefaultObject());
-				bCanDie = (DmgType == nullptr || (DmgType && DmgType->GetCanDieFrom()));
-			}
+				/* Check the damage type, always allow dying if the cast fails, otherwise check the property if player can die from damage type */
+				if (DamageEvent.DamageTypeClass)
+				{
+					UVDamageType* DmgType = Cast<UVDamageType>(DamageEvent.DamageTypeClass->GetDefaultObject());
+					bCanDie = (DmgType == nullptr || (DmgType && DmgType->GetCanDieFrom()));
+				}
 
-			if (bCanDie)
-			{
-				Die(ActualDamage, DamageEvent, EventInstigator, DamageCauser);
-			}
-			else
-			{
-				/* Player cannot die from this damage type, set hit points to 1.0 */
-				Health = 1.0f;
+				if (bCanDie)
+				{
+					Die(ActualDamage, DamageEvent, EventInstigator, DamageCauser);
+				}
+				else
+				{
+					/* Player cannot die from this damage type, set hit points to 1.0 */
+					Health = 1.0f;
+				}
 			}
 		}
-		
 	}
 
 	return ActualDamage;
@@ -213,5 +240,11 @@ void AVBaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	// Value is already updated locally, skip in replication step
+	
 
+	// Replicate to every client, no special condition required
+	DOREPLIFETIME(AVBaseCharacter, Health);
+	DOREPLIFETIME(AVBaseCharacter, Shields);
+	
 }

@@ -7,9 +7,12 @@
 UVDamageType::UVDamageType(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	/* We apply this modifier based on the physics material setup to the head of the enemy PhysAsset */
-	HeadDmgModifier = 2.0f;
-	LimbDmgModifier = 0.5f;
+	/* We apply this modifier based on the physics material setup to Different material types */
+	DefaultDmgModifier = 1.0f;
+	BodyDmgModifier = 1.0f;
+	ArmourDmgModifier = 0.5f;
+	ShieldDmgModifier = 0.25f;
+	InanimateDmgModifier = 0.125f;
 
 	bCanDieFrom = true;
 }
@@ -21,13 +24,27 @@ bool UVDamageType::GetCanDieFrom()
 }
 
 
-float UVDamageType::GetHeadDamageModifier()
+float UVDamageType::GetDefaultDamageModifier()
 {
-	return HeadDmgModifier;
+	return DefaultDmgModifier;
 }
 
-float UVDamageType::GetLimbDamageModifier()
+float UVDamageType::GetBodyDamageModifier()
 {
-	return LimbDmgModifier;
+	return BodyDmgModifier;
 }
 
+float UVDamageType::GetArmourDamageModifier()
+{
+	return ArmourDmgModifier;
+}
+
+float UVDamageType::GetShieldDamageModifier()
+{
+	return ShieldDmgModifier;
+}
+
+float UVDamageType::GetInanimateDamageModifier()
+{
+	return InanimateDmgModifier;
+}

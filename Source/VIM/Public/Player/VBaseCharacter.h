@@ -158,10 +158,34 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PlayerCondition")
 		float GetHealth() const;
 
+	UFUNCTION(BlueprintPure, Category = "PlayerCondition")
+		float GetHealthPercentage() const;
+
 	UFUNCTION(BlueprintCallable, Category = "PlayerCondition")
 		bool IsAlive() const;
 
-	
+	/************************************************************************/
+	/* Shields                                                              */
+	/************************************************************************/
+
+	UFUNCTION(BlueprintCallable, Category = "PlayerCondition")
+		float GetShields() const;
+
+	UFUNCTION(BlueprintCallable, Category = "PlayerCondition")
+		float GetMaxShields() const;
+
+	UFUNCTION(BlueprintPure, Category = "PlayerCondition")
+		float GetShieldPercentage() const;
+	/* Limit to trigger shield failure warning */
+	UPROPERTY(BlueprintReadOnly, Category = "PlayerCondition")
+		float CriticalShieldThreshold;
+
+	UPROPERTY(EditDefaultsOnly, Category = "PlayerCondition", Replicated)
+		float Shields;
+
+	// Documentation Note: MaxHunger does not need to be replicated, only values that change and are displayed or used by clients should ever be replicated.
+	UPROPERTY(EditDefaultsOnly, Category = "PlayerCondition")
+		float MaxShields;
 
 protected:
 

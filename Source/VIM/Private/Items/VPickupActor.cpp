@@ -99,5 +99,6 @@ void AVPickupActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLi
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(AVPickupActor, bIsActive);
 	
 }

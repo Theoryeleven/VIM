@@ -16,6 +16,7 @@
 AVCharacter::AVCharacter(const class FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -75,7 +76,10 @@ AVCharacter::AVCharacter(const class FObjectInitializer& ObjectInitializer)
 	CriticalEnergyThreshold = 10;
 	EnergyDamagePerInterval = 1.0f;
 	MinEnergy = 0;
+	MaxEnergy = 100;
 	Energy = 100;
+	Shields = 0;
+	MaxShields = 100;
 
 	/* Names as specified in the character skeleton */
 	WeaponAttachPoint = TEXT("WeaponSocket");
@@ -98,7 +102,6 @@ void AVCharacter::BeginPlay()
 void AVCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 	if (CursorToWorld != nullptr)
 	{
 		
@@ -208,7 +211,12 @@ void AVCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	
+	// Replicate to every client, no special condition required
+	DOREPLIFETIME(AVCharacter, Energy);
+	DOREPLIFETIME(AVCharacter, CurrentWeapon);
+	DOREPLIFETIME(AVCharacter, Inventory);
+	/* If we did not display the current inventory on the player mesh we could optimize replication by using this replication condition. */
+	/* DOREPLIFETIME_CONDITION(ASCharacter, Inventory, COND_OwnerOnly);*/
 }
 float AVCharacter::GetEnergy() const
 {
@@ -217,6 +225,14 @@ float AVCharacter::GetEnergy() const
 float AVCharacter::GetMinEnergy() const
 {
 	return MinEnergy;
+}
+float AVCharacter::GetMaxEnergy() const
+{
+	return MaxEnergy;
+}
+float AVCharacter::GetEnergyPercentage() const
+{
+	return Energy / MaxEnergy;
 }
 void AVCharacter::RestoreCondition(float HealthRestored, float EnergyRestored)
 {
@@ -710,3 +726,4 @@ void AVCharacter::OnSetDestinationReleased()
 	// clear flag to indicate we should stop updating the destination
 	bMoveToMouseCursor = false;
 }
+

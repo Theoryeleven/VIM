@@ -34,7 +34,7 @@ void USoundNodeLocalPlayer::CreateStartingConnectors()
 #if WITH_EDITOR
 FText USoundNodeLocalPlayer::GetInputPinName(int32 PinIndex) const
 {
-	return (PinIndex == 0) ? NSLOCTEXT("Survival", "InputPinName", "Local") : NSLOCTEXT("Survival", "InputPinName", "Remote");
+	return (PinIndex == 0) ? NSLOCTEXT("VIM", "InputPinName", "Local") : NSLOCTEXT("VIM", "InputPinName", "Remote");
 }
 #endif
 

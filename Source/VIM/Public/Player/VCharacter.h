@@ -70,6 +70,10 @@ private:
 	class UVCarryObjectComponent* CarriedObjectComp;
 
 public:
+	UFUNCTION(BlueprintCallable, Category = "PlayerCondition")
+	float GetXPS() const;
+	UFUNCTION(BlueprintCallable, Category = "PlayerCondition")
+	void AddEXPS(int32 kill);
 
 	UFUNCTION(BlueprintCallable, Category = "AI")
 	float GetLastNoiseLoudness();
@@ -149,14 +153,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PlayerCondition")
 	void RestoreCondition(float HealthRestored, float EnergyRestored);
 
-	/* Decrements Energy, used by timer. */
-	void DecrimentEnergy();
+	/* Increments Energy, used by timer. */
+	void IncrimentEnergy();
 
 	UPROPERTY(EditDefaultsOnly, Category = "PlayerCondition")
-	float DecrimentEnergyInterval;
+	float IncrimentEnergyInterval;
 
 	UPROPERTY(EditDefaultsOnly, Category = "PlayerCondition")
-	float DecrimentEnergyAmount;
+	float IncrimentEnergyAmount;
 
 	/* Limit when player suffers Hit points from extreme hunger */
 	UPROPERTY(BlueprintReadOnly, Category = "PlayerCondition")
@@ -210,7 +214,7 @@ private:
 	FName SpineAttachPoint;
 
 	bool bWantsToFire;
-
+	int32 EXPS;
 	/* Distance away from character when dropping inventory items. */
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory")
 	float DropWeaponMaxDistance;

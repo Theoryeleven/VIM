@@ -71,8 +71,8 @@ AVCharacter::AVCharacter(const class FObjectInitializer& ObjectInitializer)
 
 	Health = 100;
 
-	DecrimentEnergyAmount = 5.0f;
-	DecrimentEnergyInterval = 5.0f;
+	IncrimentEnergyAmount = 5.0f;
+	IncrimentEnergyInterval = 5.0f;
 	CriticalEnergyThreshold = 10;
 	EnergyDamagePerInterval = 1.0f;
 	MinEnergy = 0;
@@ -94,7 +94,7 @@ void AVCharacter::BeginPlay()
 
 	
 		FTimerHandle Handle;
-		GetWorldTimerManager().SetTimer(Handle, this, &AVCharacter::DecrimentEnergy, DecrimentEnergyInterval, true);
+		GetWorldTimerManager().SetTimer(Handle, this, &AVCharacter::IncrimentEnergy, IncrimentEnergyInterval, true);
 	
 }
 
@@ -218,6 +218,14 @@ void AVCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	/* If we did not display the current inventory on the player mesh we could optimize replication by using this replication condition. */
 	/* DOREPLIFETIME_CONDITION(ASCharacter, Inventory, COND_OwnerOnly);*/
 }
+float AVCharacter::GetXPS() const
+{
+	return EXPS;
+}
+void AVCharacter::AddEXPS(int32 kill)
+{
+	EXPS = EXPS + kill;
+}
 float AVCharacter::GetEnergy() const
 {
 	return Energy;
@@ -248,11 +256,11 @@ void AVCharacter::RestoreCondition(float HealthRestored, float EnergyRestored)
 		PC->HUDMessage(EHUDMessage::Character_EnergyRestored);
 	}
 }
-void AVCharacter::DecrimentEnergy()
+void AVCharacter::IncrimentEnergy()
 {
-	Energy = FMath::Clamp(Energy - DecrimentEnergyAmount, 0.0f, GetMinEnergy());
+	Energy = FMath::Clamp(Energy + IncrimentEnergyAmount, 0.0f, GetMaxEnergy());
 
-	if (Energy > CriticalEnergyThreshold)
+	if (Energy < CriticalEnergyThreshold)
 	{
 		FDamageEvent DmgEvent;
 		DmgEvent.DamageTypeClass = EnergyDamageType;

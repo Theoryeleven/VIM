@@ -650,6 +650,7 @@ void AVWeapon::StartReload(bool bFromReplication)
 		{
 			PlayWeaponSound(ReloadSound);
 		}
+		ReloadWeapon();
 	}
 }
 

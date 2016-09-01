@@ -60,10 +60,9 @@ void AVWeaponInstant::FireWeapon()
 	GetWorld()->LineTraceSingleByChannel(Hit, Start, End, COLLISION_WEAPON, TraceParams);
 
 	UE_LOG(LogTemp, Warning, TEXT("Fire!"));
-
 	CurrentAmmo--;
 	ProcessInstantHit(Hit, Start, End);
-
+	SimulateWeaponFire();
 	if (Hit.GetActor()) {
 		UE_LOG(LogTemp, Warning, TEXT("Hit! %s"), *Hit.GetActor()->GetName());
 		DealDamage(Hit);

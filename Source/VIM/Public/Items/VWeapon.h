@@ -4,6 +4,7 @@
 
 #include "GameFramework/Actor.h"
 #include "VCharacter.h"
+#include "VProjectileBase.h"
 #include "VWeapon.generated.h"
 
 UENUM()
@@ -106,11 +107,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TSubclassOf<class AVWeaponPickup> WeaponPickupClass;
 
+	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "bUsesProjectile"))
+	TSubclassOf<class AVProjectileBase> ProjectileClass;
+
 	/************************************************************************/
 	/* Fire & Damage Handling                                               */
 	/************************************************************************/
 
 public:
+
+	
 
 	void StartFire();
 
@@ -183,6 +189,7 @@ private:
 
 	UPROPERTY(Transient)
 	UParticleSystemComponent* MuzzlePSC;
+
 
 	UPROPERTY(EditDefaultsOnly)
 	FName MuzzleAttachPoint;
@@ -267,6 +274,7 @@ protected:
 	void OnRep_Reload();
 
 public:
+	class AVCharacter* OwningPlayer;
 
 	virtual void StartReload(bool bFromReplication = false);
 

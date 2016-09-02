@@ -71,14 +71,14 @@ protected:
 	void ProcessInstantHitConfirmed(const FHitResult& Impact, const FVector& Origin, const FVector& ShootDir);
 
 	UFUNCTION(Reliable, Server, WithValidation)
-		void ServerNotifyHit(const FHitResult Impact, FVector_NetQuantizeNormal ShootDir);
+	void ServerNotifyHit(const FHitResult Impact, FVector_NetQuantizeNormal ShootDir);
 
 	void ServerNotifyHit_Implementation(const FHitResult Impact, FVector_NetQuantizeNormal ShootDir);
 
 	bool ServerNotifyHit_Validate(const FHitResult Impact, FVector_NetQuantizeNormal ShootDir);
 
 	UFUNCTION(Reliable, Server, WithValidation)
-		void ServerNotifyMiss(FVector_NetQuantizeNormal ShootDir);
+	void ServerNotifyMiss(FVector_NetQuantizeNormal ShootDir);
 
 	void ServerNotifyMiss_Implementation(FVector_NetQuantizeNormal ShootDir);
 

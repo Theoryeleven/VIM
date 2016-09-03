@@ -107,8 +107,7 @@ bool AVBaseCharacter::CanDie(float KillingDamage, FDamageEvent const& DamageEven
 {
 	/* Check if character is already dying, destroyed or if we have authority */
 	if (bIsDying ||
-		IsPendingKill() ||
-		GetWorld()->GetAuthGameMode() == NULL )
+		IsPendingKill())
 		
 	{
 		return false;

@@ -23,18 +23,9 @@ void AVWeaponInstant::FireWeapon()
 	FHitResult Hit(ForceInit);
 	FVector Start = GetMuzzleLocation();
 	FVector End = Start + CalcSpread() * WeaponRange;
-
 	GetWorld()->LineTraceSingleByChannel(Hit, Start, End, COLLISION_WEAPON, TraceParams);
-
-	//UE_LOG(LogTemp, Warning, TEXT("Fire!"));
-	//CurrentAmmo--;
 	ProcessInstantHit(Hit, Start, End);
 	SimulateWeaponFire();
-	if (Hit.GetActor()) {
-		UE_LOG(LogTemp, Warning, TEXT("Hit! %s"), *Hit.GetActor()->GetName());
-		DealDamage(Hit);
-		SpawnImpactEffects(Hit);
-	}
 }
 FVector AVWeaponInstant::CalcSpread() {
 	if (GetOwner()) {

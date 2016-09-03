@@ -483,7 +483,7 @@ void AVWeapon::OnEquipFinished()
 void AVWeapon::UseAmmo()
 {
 	CurrentAmmoInClip--;
-	CurrentAmmo--;
+	
 }
 int32 AVWeapon::GiveAmmo(int32 AddAmount)
 {
@@ -582,7 +582,6 @@ void AVWeapon::OnRep_Reload()
 		StopSimulateReload();
 	}
 }
-
 void AVWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 

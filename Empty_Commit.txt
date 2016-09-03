@@ -1,0 +1,1 @@
+Creating extra empty commit so I can rever to initial state and I am not trying to revert back to merge commit.

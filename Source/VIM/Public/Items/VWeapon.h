@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// copyright The Perfect Game Company 2016
 
 #pragma once
 
@@ -17,12 +17,15 @@ enum class EWeaponState
 };
 
 /**
- * 
+ * Base weapon class all now weapon types are inherited from this class
+ * YOU MUST DECLARE A FIREWEAPON CLASS IN YOUR INHERITED CLASSES !!!!!! 
  */
 UCLASS(ABSTRACT, Blueprintable)
 class VIM_API AVWeapon : public AActor
 {
 	GENERATED_BODY()
+
+public:
 
 	virtual void PostInitializeComponents() override;
 
@@ -58,7 +61,7 @@ protected:
 	EInventorySlot StorageSlot;
 
 	/** pawn owner */
-	UPROPERTY(Transient, ReplicatedUsing = OnRep_MyPawn)
+	UPROPERTY()
 	class AVCharacter* MyPawn;
 
 	/** weapon mesh: 3rd person view */
@@ -196,7 +199,7 @@ private:
 
 	bool bPlayingFireAnim;
 
-	UPROPERTY(Transient, ReplicatedUsing=OnRep_BurstCounter)
+	UPROPERTY()
 	int32 BurstCounter;
 
 protected:
@@ -274,6 +277,7 @@ protected:
 	void OnRep_Reload();
 
 public:
+
 	class AVCharacter* OwningPlayer;
 
 	virtual void StartReload(bool bFromReplication = false);

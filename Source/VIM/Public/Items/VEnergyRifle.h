@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// copyright The Perfect Game Company 2016
 
 #pragma once
 #include "Items/VWeapon.h"

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// copyright The Perfect Game Company 2016
 
 #include "VIM.h"
 #include "VWeapon.h"
@@ -40,8 +40,6 @@ AVWeapon::AVWeapon(const class FObjectInitializer& PCIP)
 	NoAnimReloadDuration = 1.5f;
 	NoEquipAnimDuration = 0.5f;
 }
-
-
 void AVWeapon::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
@@ -51,8 +49,6 @@ void AVWeapon::PostInitializeComponents()
 	CurrentAmmo = FMath::Min(StartAmmo, MaxAmmo);
 	CurrentAmmoInClip = FMath::Min(MaxAmmoPerClip, StartAmmo);
 }
-
-
 void AVWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
@@ -60,8 +56,6 @@ void AVWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	DetachMeshFromPawn();
 	StopSimulatingWeaponFire();
 }
-
-
 /*
 	Return Mesh of Weapon
 */
@@ -69,14 +63,10 @@ USkeletalMeshComponent* AVWeapon::GetWeaponMesh() const
 {
 	return Mesh;
 }
-
-
 class AVCharacter* AVWeapon::GetPawnOwner() const
 {
 	return MyPawn;
 }
-
-
 void AVWeapon::SetOwningPawn(AVCharacter* NewOwner)
 {
 	if (MyPawn != NewOwner)
@@ -87,8 +77,6 @@ void AVWeapon::SetOwningPawn(AVCharacter* NewOwner)
 		SetOwner(NewOwner);
 	}
 }
-
-
 void AVWeapon::OnRep_MyPawn()
 {
 	if (MyPawn)
@@ -101,8 +89,6 @@ void AVWeapon::OnRep_MyPawn()
 
 	}
 }
-
-
 void AVWeapon::AttachMeshToPawn(EInventorySlot Slot)
 {
 	if (MyPawn)
@@ -115,15 +101,11 @@ void AVWeapon::AttachMeshToPawn(EInventorySlot Slot)
 		Mesh->AttachToComponent(PawnMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, AttachPoint);
 	}
 }
-
-
 void AVWeapon::DetachMeshFromPawn()
 {
 	Mesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 	Mesh->SetHiddenInGame(true);
 }
-
-
 void AVWeapon::OnEquip(bool bPlayAnimation)
 {
 	bPendingEquip = true;
@@ -153,8 +135,6 @@ void AVWeapon::OnEquip(bool bPlayAnimation)
 		PlayWeaponSound(EquipSound);
 	}
 }
-
-
 void AVWeapon::OnUnEquip()
 {
 	bIsEquipped = false;
@@ -177,15 +157,11 @@ void AVWeapon::OnUnEquip()
 
 	DetermineWeaponState();
 }
-
-
 void AVWeapon::OnEnterInventory(AVCharacter* NewOwner)
 {
 	SetOwningPawn(NewOwner);
 	AttachMeshToPawn(StorageSlot);
 }
-
-
 void AVWeapon::OnLeaveInventory()
 {
 	SetOwningPawn(nullptr);
@@ -195,20 +171,14 @@ void AVWeapon::OnLeaveInventory()
 	}
 	DetachMeshFromPawn();
 }
-
-
 bool AVWeapon::IsEquipped() const
 {
 	return bIsEquipped;
 }
-
-
 bool AVWeapon::IsAttachedToPawn() const // TODO: Review name to more accurately specify meaning.
 {
 	return bIsEquipped || bPendingEquip;
 }
-
-
 void AVWeapon::StartFire()
 {
 	if (!bWantsToFire)
@@ -217,8 +187,6 @@ void AVWeapon::StartFire()
 		DetermineWeaponState();
 	}
 }
-
-
 void AVWeapon::StopFire()
 {
 	if (bWantsToFire)
@@ -227,15 +195,12 @@ void AVWeapon::StopFire()
 		DetermineWeaponState();
 	}
 }
-
 bool AVWeapon::CanFire() const
 {
 	bool bPawnCanFire = MyPawn && MyPawn->CanFire();
 	bool bStateOK = CurrentState == EWeaponState::Idle || CurrentState == EWeaponState::Firing;
 	return bPawnCanFire && bStateOK && !bPendingReload;
 }
-
-
 FVector AVWeapon::GetAdjustedAim() const
 {
 	AVPlayerController* const PC = Instigator ? Cast<AVPlayerController>(Instigator->Controller) : nullptr;
@@ -256,8 +221,6 @@ FVector AVWeapon::GetAdjustedAim() const
 
 	return FinalAim;
 }
-
-
 FVector AVWeapon::GetCameraDamageStartLocation(const FVector& AimDir) const
 {
 	AVPlayerController* PC = MyPawn ? Cast<AVPlayerController>(MyPawn->Controller) : nullptr;
@@ -274,8 +237,6 @@ FVector AVWeapon::GetCameraDamageStartLocation(const FVector& AimDir) const
 
 	return OutStartTrace;
 }
-
-
 FHitResult AVWeapon::WeaponTrace(const FVector& TraceFrom, const FVector& TraceTo) const
 {
 	FCollisionQueryParams TraceParams(TEXT("WeaponTrace"), true, Instigator);
@@ -287,9 +248,6 @@ FHitResult AVWeapon::WeaponTrace(const FVector& TraceFrom, const FVector& TraceT
 
 	return Hit;
 }
-
-
-
 void AVWeapon::HandleFiring()
 {
 	if (CurrentAmmoInClip > 0 && CanFire())
@@ -346,8 +304,6 @@ void AVWeapon::HandleFiring()
 
 	LastFireTime = GetWorld()->GetTimeSeconds();
 }
-
-
 void AVWeapon::SimulateWeaponFire()
 {
 	if (MuzzleFX)
@@ -363,8 +319,6 @@ void AVWeapon::SimulateWeaponFire()
 
 	PlayWeaponSound(FireSound);
 }
-
-
 void AVWeapon::StopSimulatingWeaponFire()
 {
 	if (bPlayingFireAnim)
@@ -373,9 +327,6 @@ void AVWeapon::StopSimulatingWeaponFire()
 		bPlayingFireAnim = false;
 	}
 }
-
-
-
 void AVWeapon::OnRep_BurstCounter()
 {
 	if (BurstCounter > 0)
@@ -387,37 +338,14 @@ void AVWeapon::OnRep_BurstCounter()
 		StopSimulatingWeaponFire();
 	}
 }
-
-
-
-
-
-
-void AVWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(AVWeapon, MyPawn);
-
-	DOREPLIFETIME_CONDITION(AVWeapon, CurrentAmmo, COND_OwnerOnly);
-	DOREPLIFETIME_CONDITION(AVWeapon, CurrentAmmoInClip, COND_OwnerOnly);
-	DOREPLIFETIME_CONDITION(AVWeapon, BurstCounter, COND_SkipOwner);
-	DOREPLIFETIME_CONDITION(AVWeapon, bPendingReload, COND_SkipOwner);
-}
-
-
 FVector AVWeapon::GetMuzzleLocation() const
 {
 	return Mesh->GetSocketLocation(MuzzleAttachPoint);
 }
-
-
 FVector AVWeapon::GetMuzzleDirection() const
 {
 	return Mesh->GetSocketRotation(MuzzleAttachPoint).Vector();
 }
-
-
 UAudioComponent* AVWeapon::PlayWeaponSound(USoundCue* SoundToPlay)
 {
 	UAudioComponent* AC = nullptr;
@@ -428,14 +356,10 @@ UAudioComponent* AVWeapon::PlayWeaponSound(USoundCue* SoundToPlay)
 
 	return AC;
 }
-
-
 EWeaponState AVWeapon::GetCurrentState() const
 {
 	return CurrentState;
 }
-
-
 void AVWeapon::SetWeaponState(EWeaponState NewState)
 {
 	const EWeaponState PrevState = CurrentState;
@@ -452,8 +376,6 @@ void AVWeapon::SetWeaponState(EWeaponState NewState)
 		OnBurstStarted();
 	}
 }
-
-
 void AVWeapon::OnBurstStarted()
 {
 	// Start firing, can be delayed to satisfy TimeBetweenShots
@@ -468,8 +390,6 @@ void AVWeapon::OnBurstStarted()
 		HandleFiring();
 	}
 }
-
-
 void AVWeapon::OnBurstFinished()
 {
 	BurstCounter = 0;
@@ -482,8 +402,6 @@ void AVWeapon::OnBurstFinished()
 	GetWorldTimerManager().ClearTimer(TimerHandle_HandleFiring);
 	bRefiring = false;
 }
-
-
 void AVWeapon::DetermineWeaponState()
 {
 	EWeaponState NewState = EWeaponState::Idle;
@@ -513,20 +431,14 @@ void AVWeapon::DetermineWeaponState()
 
 	SetWeaponState(NewState);
 }
-
-
 float AVWeapon::GetEquipStartedTime() const
 {
 	return EquipStartedTime;
 }
-
-
 float AVWeapon::GetEquipDuration() const
 {
 	return EquipDuration;
 }
-
-
 float AVWeapon::PlayWeaponAnimation(UAnimMontage* Animation, float InPlayRate, FName StartSectionName)
 {
 	float Duration = 0.0f;
@@ -540,8 +452,6 @@ float AVWeapon::PlayWeaponAnimation(UAnimMontage* Animation, float InPlayRate, F
 
 	return Duration;
 }
-
-
 void AVWeapon::StopWeaponAnimation(UAnimMontage* Animation)
 {
 	if (MyPawn)
@@ -552,8 +462,6 @@ void AVWeapon::StopWeaponAnimation(UAnimMontage* Animation)
 		}
 	}
 }
-
-
 void AVWeapon::OnEquipFinished()
 {
 	AttachMeshToPawn();
@@ -572,16 +480,11 @@ void AVWeapon::OnEquipFinished()
 		}
 	}
 }
-
-
-
 void AVWeapon::UseAmmo()
 {
 	CurrentAmmoInClip--;
 	CurrentAmmo--;
 }
-
-
 int32 AVWeapon::GiveAmmo(int32 AddAmount)
 {
 	const int32 MissingAmmo = FMath::Max(0, MaxAmmo - CurrentAmmo);
@@ -598,39 +501,27 @@ int32 AVWeapon::GiveAmmo(int32 AddAmount)
 	/* Return the unused ammo when weapon is filled up */
 	return FMath::Max(0, AddAmount - MissingAmmo);
 }
-
-
 void AVWeapon::SetAmmoCount(int32 NewTotalAmount)
 {
 	CurrentAmmo = FMath::Min(MaxAmmo, NewTotalAmount);
 	CurrentAmmoInClip = FMath::Min(MaxAmmoPerClip, CurrentAmmo);
 }
-
-
 int32 AVWeapon::GetCurrentAmmo() const
 {
 	return CurrentAmmo;
 }
-
-
 int32 AVWeapon::GetCurrentAmmoInClip() const
 {
 	return CurrentAmmoInClip;
 }
-
-
 int32 AVWeapon::GetMaxAmmoPerClip() const
 {
 	return MaxAmmoPerClip;
 }
-
-
 int32 AVWeapon::GetMaxAmmo() const
 {
 	return MaxAmmo;
 }
-
-
 void AVWeapon::StartReload(bool bFromReplication)
 {
 	/* If local execute requested or we are running on the server */
@@ -653,8 +544,6 @@ void AVWeapon::StartReload(bool bFromReplication)
 		ReloadWeapon();
 	}
 }
-
-
 void AVWeapon::StopSimulateReload()
 {
 	if (CurrentState == EWeaponState::Reloading)
@@ -664,8 +553,6 @@ void AVWeapon::StopSimulateReload()
 		StopWeaponAnimation(ReloadAnim);
 	}
 }
-
-
 void AVWeapon::ReloadWeapon()
 {
 	int32 ClipDelta = FMath::Min(MaxAmmoPerClip - CurrentAmmoInClip, CurrentAmmo - CurrentAmmoInClip);
@@ -673,6 +560,7 @@ void AVWeapon::ReloadWeapon()
 	if (ClipDelta > 0)
 	{
 		CurrentAmmoInClip += ClipDelta;
+		CurrentAmmo -= ClipDelta;
 	}
 }
 bool AVWeapon::CanReload()
@@ -695,7 +583,13 @@ void AVWeapon::OnRep_Reload()
 	}
 }
 
+void AVWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
 
+
+	
+
+}
 
 
 

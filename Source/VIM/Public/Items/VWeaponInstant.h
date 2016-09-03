@@ -7,7 +7,7 @@
 /**
  * Base class for instant damage weapons assault rifles pistols machine guns etc.
  */
-UCLASS()
+UCLASS(ABSTRACT, Blueprintable)
 class VIM_API AVWeaponInstant : public AVWeapon
 {
 	GENERATED_BODY()

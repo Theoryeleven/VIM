@@ -3,7 +3,7 @@
 #include "VIM.h"
 #include "VWeapon.h"
 #include "VCharacter.h"
-#include "VBaseCharacter.h"
+#include "Types.h"
 #include "VWeaponPickup.h"
 #include "VPlayerController.h"
 

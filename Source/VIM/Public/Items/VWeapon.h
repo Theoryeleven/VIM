@@ -3,8 +3,8 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+#include "Types.h"
 #include "VCharacter.h"
-#include "VProjectileBase.h"
 #include "VWeapon.generated.h"
 
 UENUM()
@@ -14,6 +14,52 @@ enum class EWeaponState
 	Firing,
 	Equipping,
 	Reloading
+};
+
+USTRUCT()
+struct FWeaponData
+{
+	GENERATED_USTRUCT_BODY()
+
+		/** inifite ammo for reloads */
+		UPROPERTY(EditDefaultsOnly, Category = Ammo)
+		bool bInfiniteAmmo;
+
+	/** infinite ammo in clip, no reload required */
+	UPROPERTY(EditDefaultsOnly, Category = Ammo)
+		bool bInfiniteClip;
+
+	/** max ammo */
+	UPROPERTY(EditDefaultsOnly, Category = Ammo)
+		int32 MaxAmmo;
+
+	/** clip size */
+	UPROPERTY(EditDefaultsOnly, Category = Ammo)
+		int32 AmmoPerClip;
+
+	/** initial clips */
+	UPROPERTY(EditDefaultsOnly, Category = Ammo)
+		int32 InitialClips;
+
+	/** time between two consecutive shots */
+	UPROPERTY(EditDefaultsOnly, Category = WeaponStat)
+		float TimeBetweenShots;
+
+	/** failsafe reload duration if weapon doesn't have any animation for it */
+	UPROPERTY(EditDefaultsOnly, Category = WeaponStat)
+		float NoAnimReloadDuration;
+
+	/** defaults */
+	FWeaponData()
+	{
+		bInfiniteAmmo = false;
+		bInfiniteClip = false;
+		MaxAmmo = 100;
+		AmmoPerClip = 20;
+		InitialClips = 4;
+		TimeBetweenShots = 0.2f;
+		NoAnimReloadDuration = 1.0f;
+	}
 };
 
 /**
@@ -110,8 +156,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TSubclassOf<class AVWeaponPickup> WeaponPickupClass;
 
-	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "bUsesProjectile"))
-	TSubclassOf<class AVProjectileBase> ProjectileClass;
+
 
 	/************************************************************************/
 	/* Fire & Damage Handling                                               */
@@ -232,6 +277,13 @@ private:
 	FTimerHandle TimerHandle_StopReload;
 
 protected:
+
+	enum class EAmmoType
+	{
+		EBullet,
+		ERocket,
+		EMax,
+	};
 
 	/* Time to assign on reload when no animation is found */
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")

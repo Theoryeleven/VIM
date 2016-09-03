@@ -2,48 +2,71 @@
 
 #pragma once
 
-#include "GameFramework/Actor.h"
+#include "VWeaponProjectile.h"
 #include "VProjectileBase.generated.h"
 
-UCLASS()
-class VIM_API AVProjectileBase : public AActor
+
+UCLASS(Abstract, Blueprintable)
+class AVProjectileBase : public AActor
 {
-	GENERATED_BODY()
-	
-public:	
-	AVProjectileBase();
-	void Inititalize(FVector Direction);
-	void Trace(float DeltaTime);
-	void Move(float DeltaTime);
-	void DealDamage(FHitResult& Hit);
-	void SpawnImpactEffect(FHitResult& Hit);
+	GENERATED_UCLASS_BODY()
 
-	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
+		/** initial setup */
+		virtual void PostInitializeComponents() override;
 
-protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = ProjectileBase, meta = (AllowPrivateAccess = "true"))
-		UStaticMeshComponent* ProjectileMesh;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = ProjectileBase, meta = (AllowPrivateAccess = "true"))
-		UParticleSystemComponent* ProjectileParticles;
+	/** setup velocity */
+	void InitVelocity(FVector& ShootDirection);
+
+	/** handle hit */
+	UFUNCTION()
+		void OnImpact(const FHitResult& HitResult);
 
 private:
-	UPROPERTY(EditDefaultsOnly)
-		float InitialSpeed;
-	UPROPERTY(EditDefaultsOnly)
-		float ImpulseStrength;
-	UPROPERTY(EditDefaultsOnly)
-		USoundCue* ImpactSound;
-	UPROPERTY(EditDefaultsOnly)
-		UParticleSystem* ImpactEffect;
-	UPROPERTY(EditDefaultsOnly)
-		FRadialDamageParams RadDamageParams;
+	/** movement component */
+	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
+		UProjectileMovementComponent* MovementComp;
 
-	FVector Velocity;
-	FCollisionQueryParams TraceParams;
+	/** collisions */
+	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
+		USphereComponent* CollisionComp;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
+		UParticleSystemComponent* ParticleComp;
+protected:
+
+	/** effects for explosion */
+	UPROPERTY(EditDefaultsOnly, Category = Effects)
+		TSubclassOf<class AVExplosionEffect> ExplosionTemplate;
+
+	/** controller that fired me (cache for damage calculations) */
+	TWeakObjectPtr<AController> MyController;
+
+	/** projectile data */
+	struct FProjectileWeaponData WeaponConfig;
+
+	/** did it explode? */
+	UPROPERTY(Transient, ReplicatedUsing = OnRep_Exploded)
+		bool bExploded;
+
+	/** [client] explosion happened */
+	UFUNCTION()
+		void OnRep_Exploded();
+
+	/** trigger explosion */
+	void Explode(const FHitResult& Impact);
+
+	/** shutdown projectile and prepare for destruction */
+	void DisableAndDestroy();
+
+	/** update velocity on client */
+	virtual void PostNetReceiveVelocity(const FVector& NewVelocity) override;
+
+protected:
+	/** Returns MovementComp subobject **/
+	FORCEINLINE UProjectileMovementComponent* GetMovementComp() const { return MovementComp; }
+	/** Returns CollisionComp subobject **/
+	FORCEINLINE USphereComponent* GetCollisionComp() const { return CollisionComp; }
+	/** Returns ParticleComp subobject **/
+	FORCEINLINE UParticleSystemComponent* GetParticleComp() const { return ParticleComp; }
 };
-
-
-
-
 

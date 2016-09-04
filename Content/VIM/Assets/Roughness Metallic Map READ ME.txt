@@ -1,0 +1,3 @@
+In order to properly use the Ambient Occlusion/Roughness/Metallic Packed Map follow instructions on "Textures Intr.png". 
+
+Most assets comes with 2 textures sizes (512x512 and 1024x1024 for example).

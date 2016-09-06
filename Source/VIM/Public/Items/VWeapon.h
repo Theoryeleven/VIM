@@ -155,7 +155,8 @@ public:
 	/* The class to spawn in the level when dropped */
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TSubclassOf<class AVWeaponPickup> WeaponPickupClass;
-
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class AVRocketBase> ProjectileClass;
 
 
 	/************************************************************************/

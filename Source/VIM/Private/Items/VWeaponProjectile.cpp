@@ -16,18 +16,17 @@ void AVWeaponProjectile::FireWeapon()
 	FVector ShootDir = GetMuzzleDirection();
 	FVector Origin = GetMuzzleLocation();
 
-	// trace from camera to check what's under crosshair
+	//trace from camera to check what's in front of us
 	const float ProjectileAdjustRange = 10000.0f;
-	const FVector StartTrace = GetCameraDamageStartLocation(ShootDir);
-	const FVector EndTrace = StartTrace + ShootDir * ProjectileAdjustRange;
+	const FVector StartTrace = Origin;
+	const FVector EndTrace = StartTrace * ProjectileAdjustRange;
 	FHitResult Impact = WeaponTrace(StartTrace, EndTrace);
-
+	
 	// and adjust directions to hit that actor
 	if (Impact.bBlockingHit)
 	{
 		const FVector AdjustedDir = (Impact.ImpactPoint - Origin).GetSafeNormal();
 		bool bWeaponPenetration = false;
-
 		const float DirectionDot = FVector::DotProduct(AdjustedDir, ShootDir);
 		if (DirectionDot < 0.0f)
 		{
@@ -40,7 +39,7 @@ void AVWeaponProjectile::FireWeapon()
 			// raycast along weapon mesh to check if there's blocking hit
 
 			FVector MuzzleStartTrace = Origin - GetMuzzleDirection() * 150.0f;
-			FVector MuzzleEndTrace = Origin;
+			FVector MuzzleEndTrace = EndTrace;
 			FHitResult MuzzleImpact = WeaponTrace(MuzzleStartTrace, MuzzleEndTrace);
 
 			if (MuzzleImpact.bBlockingHit)
@@ -66,14 +65,13 @@ void AVWeaponProjectile::FireWeapon()
 void AVWeaponProjectile::FireProjectile(FVector Origin, FVector_NetQuantizeNormal ShootDir)
 {
 	FTransform SpawnTM(ShootDir.Rotation(), Origin);
-	AVProjectileBase* Projectile = Cast<AVProjectileBase>(UGameplayStatics::BeginDeferredActorSpawnFromClass(this, ProjectileConfig.ProjectileClass, SpawnTM));
+	auto Projectile = Cast<AVProjectileBase>(UGameplayStatics::BeginDeferredActorSpawnFromClass(this, ProjectileConfig.ProjectileClass,SpawnTM));
 	if (Projectile)
 	{
 		Projectile->Instigator = Instigator;
 		Projectile->SetOwner(this);
 		Projectile->InitVelocity(ShootDir);
-
-		UGameplayStatics::FinishSpawningActor(Projectile, SpawnTM);
+		UGameplayStatics::FinishSpawningActor(Projectile,SpawnTM);
 	}
 }
 
